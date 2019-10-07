@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">RecycleView</string>
+
+    <string-array name="arr_of_Counter">
+        <item>Площадь</item>
+        <item>Готовка</item>
+        <item>Валюта</item>
+        <item>Данные</item>
+        <item>Энергия</item>
+        <item>Топливо</item>
+        <item>Длина</item>
+        <item>Масса</item>
+        <item>Мощность</item>
+        <item>Давление</item>
+        <item>Скорость</item>
+        <item>Температура</item>
+        <item>Время</item>
+        <item>Объём</item>
+    </string-array>
+
+    <string name="from">Из</string>
+
+    <string name="to">В</string>
+
+</resources>
