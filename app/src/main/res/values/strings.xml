@@ -22,4 +22,6 @@
 
     <string name="to">В</string>
 
+    <string name="convertationErroe">Невозможно произвести конвертацию</string>
+
 </resources>

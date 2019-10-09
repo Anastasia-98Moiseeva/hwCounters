@@ -2,19 +2,19 @@ package com.example.recycleview;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
 
 public class ItemActivity extends Activity {
-
-    private static final int POSITION_ALL = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class ItemActivity extends Activity {
         initTextView(R.id.textFrom, R.id.spinnerFrom);
         initTextView(R.id.textTo, R.id.spinnerTo);
 
-        TextView textFrom = findViewById(R.id.from);
+        final TextView textFrom = findViewById(R.id.from);
         textFrom.setText(getResources().getString(R.string.from));
 
         TextView textTo = findViewById(R.id.to);
@@ -35,29 +35,93 @@ public class ItemActivity extends Activity {
 
         final EditText fromNumber = findViewById(R.id.fromNumber);
         final EditText toNumber = findViewById(R.id.toNumber);
-
-        Button convert = findViewById(R.id.convert);
+        final Button convert = findViewById(R.id.convert);
 
         convert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner from = findViewById(R.id.spinnerFrom);
-                Spinner to = findViewById(R.id.spinnerTo);
-                if(from.getSelectedItem().equals(to.getSelectedItem())){
-                    toNumber.setText(fromNumber.getText());
+                Spinner fromSpiner = findViewById(R.id.spinnerFrom);
+                Spinner toSpiner = findViewById(R.id.spinnerTo);
+                String fromSpinerString = fromSpiner.getSelectedItem().toString();
+                String toSpinerString = toSpiner.getSelectedItem().toString();
+                if(fromSpinerString.equals(toSpinerString)){
+                    String s2 = fromNumber.getText().toString();
+                    String s = convert(fromSpinerString, s2);
+                    toNumber.setText(s);
                 } else {
-                    toNumber.setText(convert(String.valueOf(fromNumber.getText())));
+                    Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.convertationErroe), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
             }
         });
     }
 
-    public String convert(String value) {
-        if (value.equals("")) {
-            return "0";
-        } else {
-            return String.valueOf(Integer.parseInt(value)+2);
+    public String convert(String str1, String str2) {
+        String[] valueAndCounter = str2.split(" ");
+        String value = valueAndCounter[0];
+        String counter = "";
+        for(int i = 1; i < valueAndCounter.length; i++){
+            counter += (valueAndCounter[i]) + " ";
         }
+        counter = counter.substring(0, counter.length() - 1);
+        switch (str1){
+            case "Длина":
+                if (valueAndCounter.length == 2) {
+                    return convertToSantimiters(value, counter);
+                } else {
+                    return "Ошибка в единице измерения";
+                }
+            case "Площадь":
+                if (valueAndCounter.length == 4) {
+                    return convertToSantimitersInSquare(value, counter);
+                } else {
+                    return "Ошибка в единице измерения";
+                }
+            case "Время":
+                if (valueAndCounter.length == 2) {
+                    return convertToSeconds(value, counter);
+                } else {
+                    return "Ошибка в единице измерения";
+                }
+        }
+        return "";
+    }
+
+    private String convertToSeconds(String value, String counter){
+        switch (counter) {
+            case "ч":
+                return Integer.valueOf(value) * 3600 + " с";
+            case "мин":
+                return Integer.valueOf(value) * 60 + " с";
+            case "с":
+                return Integer.valueOf(value) + " с";
+        }
+        return "Неизвестная единица измерения";
+    }
+
+    private String convertToSantimitersInSquare(String value, String counter){
+        switch (counter) {
+            case "см в кв":
+                return Integer.valueOf(value) * 0.0001 + " м в кв";
+            case "мм в кв":
+                return Integer.valueOf(value) * 0.000001 + " м в кв";
+            case "м в кв":
+                return Integer.valueOf(value) + " м в кв";
+        }
+        return "Неизвестная единица измерения";
+    }
+
+    private String convertToSantimiters(String value, String counter){
+        switch (counter) {
+            case "см":
+                return Integer.valueOf(value) * 0.01 + " м";
+            case "мм":
+                return Integer.valueOf(value) * 0.001 + " м";
+            case "м":
+                return Integer.valueOf(value) + " м";
+        }
+        return "Неизвестная единица измерения";
     }
 
     private void initTextView(int textId, int spinerId){
