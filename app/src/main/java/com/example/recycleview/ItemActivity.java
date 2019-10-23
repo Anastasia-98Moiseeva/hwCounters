@@ -1,28 +1,38 @@
 package com.example.recycleview;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.Arrays;
+import java.util.Objects;
 
 
 public class ItemActivity extends Activity {
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_layout);
 
-        initSpiner(R.id.textFrom, R.id.spinnerFrom);
-        initSpiner(R.id.textTo, R.id.spinnerTo);
+        String item = Objects.requireNonNull(getIntent().getExtras()).getString("item");
+
+        initSpiner(R.id.textFrom, R.id.spinnerFrom, item);
+        initSpiner(R.id.textTo, R.id.spinnerTo, item);
 
         initTextView(R.id.textFrom, R.id.spinnerFrom);
         initTextView(R.id.textTo, R.id.spinnerTo);
@@ -131,9 +141,10 @@ public class ItemActivity extends Activity {
         text.setText(str);
     }
 
-    private void initSpiner(final int textId, final int spinerId){
+    private void initSpiner(final int textId, final int spinerId, String item){
         Spinner spinner = findViewById(spinerId);
         spinner.setAdapter( new SpinnerAdapter(Arrays.asList(getResources().getStringArray(R.array.arr_of_Counter))));
+        spinner.setSelection(getItemIndex(spinner, item));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -145,6 +156,16 @@ public class ItemActivity extends Activity {
 
             }
         });
+    }
+
+    private int getItemIndex(Spinner spinner, String myString){
+        for (int i = 0; i < spinner.getCount(); i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                return i;
+            }
+        }
+
+        return 0;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.recycleview;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,13 +43,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListItemsHolde
 
         private Button item;
 
-        public ListItemsHolder(@NonNull View itemView, Button item) {
+        public ListItemsHolder(@NonNull View itemView, final Button item) {
             super(itemView);
             this.item = item;
             item.setOnClickListener(new View.OnClickListener() {
+
                 public void onClick(View v)
                 {
-                    v.getContext().startActivity(new Intent(v.getContext(), ItemActivity.class));
+                    Intent intent = new Intent(v.getContext(), ItemActivity.class);
+                    intent.putExtra("item", item.getText());
+                    v.getContext().startActivity(intent);
                 }
             });
         }
