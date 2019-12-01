@@ -1,57 +1,76 @@
 package com.example.recycleview;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.recycleview.adapters.SpinnerAdapter;
 
 import java.util.Arrays;
-import java.util.Objects;
 
+public class ItemFragment extends Fragment {
+    private static final String ITEM_STR = "item";
 
-public class ItemActivity extends Activity {
+    private String item;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private ItemFragment(){
+        super(R.layout.fragment_item);
+    }
+
+    public static ItemFragment newInstance(String str) {
+
+        Bundle args = new Bundle();
+        ItemFragment fragment = new ItemFragment();
+        args.putSerializable(ITEM_STR, str);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.item_layout);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = super.onCreateView(inflater, container, savedInstanceState);
+        item = (String) getArguments().getSerializable(ITEM_STR);
+        init(root);
+        return root;
+    }
 
-        String item = Objects.requireNonNull(getIntent().getExtras()).getString("item");
+    private void init(final View root){
+        initSpiner(root, R.id.textFrom, R.id.spinnerFrom, item);
+        initSpiner(root, R.id.textTo, R.id.spinnerTo, item);
 
-        initSpiner(R.id.textFrom, R.id.spinnerFrom, item);
-        initSpiner(R.id.textTo, R.id.spinnerTo, item);
+        initTextView(root, R.id.textFrom, R.id.spinnerFrom);
+        initTextView(root, R.id.textTo, R.id.spinnerTo);
 
-        initTextView(R.id.textFrom, R.id.spinnerFrom);
-        initTextView(R.id.textTo, R.id.spinnerTo);
-
-        final TextView textFrom = findViewById(R.id.from);
+        final TextView textFrom = root.findViewById(R.id.from);
         textFrom.setText(getResources().getString(R.string.from));
 
-        TextView textTo = findViewById(R.id.to);
+        TextView textTo = root.findViewById(R.id.to);
         textTo.setText(getResources().getString(R.string.to));
 
-        final EditText fromNumber = findViewById(R.id.fromNumber);
-        final EditText toNumber = findViewById(R.id.toNumber);
-        final Button convert = findViewById(R.id.convert);
+        final EditText fromNumber = root.findViewById(R.id.fromNumber);
+        final EditText toNumber = root.findViewById(R.id.toNumber);
+        final Button convert = root.findViewById(R.id.convert);
+
+        final Spinner fromSpiner = root.findViewById(R.id.spinnerFrom);
+        final Spinner toSpiner = root.findViewById(R.id.spinnerTo);
 
         convert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Spinner fromSpiner = findViewById(R.id.spinnerFrom);
-                Spinner toSpiner = findViewById(R.id.spinnerTo);
                 String fromSpinerString = fromSpiner.getSelectedItem().toString();
                 String toSpinerString = toSpiner.getSelectedItem().toString();
                 if(fromSpinerString.equals(toSpinerString)){
@@ -59,13 +78,15 @@ public class ItemActivity extends Activity {
                     String s = convert(fromSpinerString, s2);
                     toNumber.setText(s);
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.convertationErroe), Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
+                            getResources().getString(R.string.convertationErroe), Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
             }
         });
     }
+
 
     public String convert(String str1, String str2) {
         String[] valueAndCounter = str2.split(" ");
@@ -134,21 +155,22 @@ public class ItemActivity extends Activity {
         return "Неизвестная единица измерения";
     }
 
-    private void initTextView(int textId, int spinerId){
-        TextView text = findViewById(textId);
-        Spinner spinner = findViewById(spinerId);
+    private void initTextView(View root, int textId, int spinerId){
+        TextView text = root.findViewById(textId);
+        Spinner spinner = root.findViewById(spinerId);
         String str = spinner.getSelectedItem().toString();
         text.setText(str);
     }
 
-    private void initSpiner(final int textId, final int spinerId, String item){
-        Spinner spinner = findViewById(spinerId);
-        spinner.setAdapter( new SpinnerAdapter(Arrays.asList(getResources().getStringArray(R.array.arr_of_Counter))));
+    private void initSpiner(final View root, final int textId, final int spinerId, String item){
+        Spinner spinner = root.findViewById(spinerId);
+        spinner.setAdapter( new SpinnerAdapter(Arrays.asList(getResources()
+                .getStringArray(R.array.arr_of_Counter))));
         spinner.setSelection(getItemIndex(spinner, item));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                initTextView(textId, spinerId);
+                initTextView(root, textId, spinerId);
             }
 
             @Override
@@ -164,8 +186,6 @@ public class ItemActivity extends Activity {
                 return i;
             }
         }
-
         return 0;
     }
-
 }

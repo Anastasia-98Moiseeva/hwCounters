@@ -1,25 +1,28 @@
 package com.example.recycleview;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initRecycleView();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.root_layout, MainFragment.newInstance(this))
+                .commit();
     }
 
-    private void initRecycleView(){
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        ListAdapter adapter = new ListAdapter(getResources().getStringArray(R.array.arr_of_Counter));
-        recyclerView.setAdapter(adapter);
+    @Override
+    public void onClick(String item) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.root_layout, ItemFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
     }
 }
+

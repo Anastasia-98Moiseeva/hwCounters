@@ -1,4 +1,4 @@
-package com.example.recycleview;
+package com.example.recycleview.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +35,8 @@ public class SpinnerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1,
+            convertView = LayoutInflater.from(parent.getContext())
+                    .inflate(android.R.layout.simple_list_item_1,
                     parent, false);
             ViewHolder viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
